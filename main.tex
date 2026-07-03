@@ -1,0 +1,184 @@
+% ======================================================================
+% jlreq book template — LuaLaTeX
+% ======================================================================
+% Compile with:  lualatex book-template.tex   (run twice for the TOC)
+%
+% jlreq itself does not manage fonts, hanging punctuation edge cases,
+% quote/footnote styling for you — you opt into each explicitly via
+% class options and \jlreqsetup. Everything below is set deliberately
+% rather than left at default, and this exact file has been test-
+% compiled (jlreq + luatexja-fontspec, TeX Live 2023/2024) before
+% being handed to you.
+% ======================================================================
+
+\documentclass[
+  book,                 % gives \chapter, \frontmatter/\mainmatter/\backmatter,
+                         % twoside-by-default layout — jlreq has no separate
+                         % jlreqbook.cls, book is a class *option*
+  paper=a5,              % trim size. Other common choices:
+                         %   paper=b6            (~128x182mm, novel/bunko-ish)
+                         %   paper={127mm,188mm} (JIS shinsho size, custom dims)
+  fontsize=10.5pt,       % Latin body size
+  jafontsize=10.5pt,     % Japanese body size (set both explicitly so
+                         % jafontscale is not silently applied)
+  twoside,
+  openright,             % chapters start on a right (recto) page — standard
+                         % for books; use openany for report-style docs
+  hanging_punctuation,   % allows 、。」 etc. to hang past the line edge
+                         % instead of forcing a justification adjustment
+  open_bracket_pos=zenkakunibu_nibu,
+                         % opening brackets「『(: full-width at a paragraph
+                         % start, half-width at a mid-paragraph line break —
+                         % this is the common convention in printed books
+]{jlreq}
+
+% ----------------------------------------------------------------------
+% Fonts
+% ----------------------------------------------------------------------
+% jlreq deliberately has no font-selection mechanism of its own.
+% On LuaLaTeX you bring in fontspec's Japanese-aware counterpart:
+\usepackage[match]{luatexja-fontspec}
+% "match" makes \bfseries/\itshape switch the CURRENT Japanese font's
+% weight/shape too when they're triggered from Latin text, instead of
+% only affecting the Latin half of mixed-script text.
+
+% --- Latin (European) fonts -------------------------------------------
+\setmainfont{Latin Modern Roman}
+\setsansfont{Latin Modern Sans}
+\setmonofont{Latin Modern Mono}
+% Swap these for whatever you actually want the Latin text set in —
+% they only affect the ASCII/Latin portions of the text, not kanji/kana.
+
+% --- Japanese fonts ------------------------------------------------
+% Below uses Noto CJK, which is freely available, has real weights
+% (unlike most free Mincho faces, which only ship one weight), and is
+% installed via `fonts-noto-cjk` on Debian/Ubuntu.
+%\setmainjfont[BoldFont=Noto Serif CJK JP SemiBold]{Noto Serif CJK JP}
+\setmainjfont[BoldFont=Noto Sans CJK JP Medium]{Noto Serif CJK JP}
+\setsansjfont{Noto Sans CJK JP}
+% BoldFont matters: most Japanese "Mincho" families ship only a Regular
+% weight, so \textbf{...} / \bfseries in Japanese text silently does
+% nothing (or, in classic (u)pLaTeX-style setups, jlreq falls back to
+% substituting the Gothic face for "bold"). Noto Serif CJK actually has
+% distinct weight instances (ExtraLight/Light/Regular/Medium/SemiBold/
+% Bold/Black), so pointing BoldFont at one of those gives you a real
+% bold Mincho instead of a font-shape hack.
+%
+% Other solid free options, same syntax:
+%   \setmainjfont{Harano Aji Mincho}     — what TeX Live embeds by
+%   \setsansjfont{Harano Aji Gothic}       default if you skip this
+%                                          section entirely; no bold weight
+%   \setmainjfont[BoldFont=BIZ UDPMincho Bold]{BIZ UDPMincho}
+%   \setsansjfont[BoldFont=BIZ UDPGothic Bold]{BIZ UDPGothic}
+%                                        — Morisawa's UD faces, 2 weights
+%                                          each, very legible at body size
+%
+% If you'd rather not hand-pick weights, luatexja-preset gives you a
+% ready-made bundle instead of the block above:
+%   \usepackage[haranoaji]{luatexja-preset}   % or: noto-otc / noto / ipa
+
+% ----------------------------------------------------------------------
+% Quotation and footnote design
+% ----------------------------------------------------------------------
+\jlreqsetup{
+  % -- block quotations (the `quote` / `quotation` environments) --
+  quote_indent           = 2\zw,        % indent from both margins
+  quote_end_indent       = 0\zw,
+  quote_beforeafter_space = .5\baselineskip,
+  quote_fontsize         = small,       % normalsize/small/footnotesize/scriptsize/tiny
+  % -- footnotes --
+  footnote_second_indent = 1\zw,        % indent for wrapped footnote lines
+  reference_mark         = inline,      % where the note marker itself sits;
+                                         % 'interlinear' puts it above the
+                                         % line instead (more traditional,
+                                         % but crowds narrow measures)
+  % -- appendix chapter numbering: 付録A, 付録B... instead of 第A章 --
+  appendix_heading = {
+    chapter = {label_format = {付録\thechapter}}
+  },
+}
+% Note: 「」『』 kagikakko dialogue/quotation marks need no package or
+% setup at all — they're ordinary characters, and jlreq positions them
+% (spacing, line-break behavior, hanging at line-end) per the JLReq
+% spec automatically. The settings above only govern the `quote`/
+% `quotation` *environment* (indented block quotes), not inline 「」.
+
+% Recommended for any real book (not required by jlreq itself):
+\usepackage[hidelinks]{hyperref}   % TOC/cross-reference links in the PDF
+
+% ======================================================================
+\title{\sffamily An Orientation for Future Hackers\\未来のハッカーのためのオリエンテーション}
+\author{\sffamily 森　祐佳 / Yuka MORI}
+\date{\sffamily 2026}
+
+\begin{document}
+
+\frontmatter
+\maketitle
+
+\chapter*{はじめに}
+
+ああああ。
+
+\tableofcontents
+
+\mainmatter
+\chapter{最初の章}
+
+本文はこのように流れる。「これは鉤括弧の例です」と彼女は言った。
+さらに入れ子にすると『これは二重鉤括弧の例です』のようになる。
+
+\begin{quotation}
+これはブロック引用（quotation 環境）の例です。quote\_indent や
+quote\_beforeafter\_space、quote\_fontsize で字下げ・前後の空き・
+文字サイズを調整できます。
+\end{quotation}
+
+ここに脚注を付ける\footnote{脚注の内容。二行目以降のインデントは
+footnote\_second\_indent で調整する。}。
+
+\section{節の例}
+
+\textbf{和文の強調（ボールド）はここに出る。}
+
+\appendix
+\chapter{付録の章}
+ 
+付録の本文。
+
+\backmatter
+\chapter*{あとがき}
+ 
+あとがきの本文。
+ 
+\chapter*{参考文献}
+
+% ----------------------------------------------------------------------
+% 奥付 (colophon) — the closing publication-data page. jlreq has no
+% concept of this; Japanese books hand-build it as a final unnumbered
+% page. There's no single fixed layout, but 発行日/著者/発行者/発行所
+% (issue date / author / publisher-as-person / publisher-as-entity) is
+% the conventional minimum; add ISBN/価格 only if the book is actually
+% sold through normal retail channels.
+% ----------------------------------------------------------------------
+\clearpage
+\thispagestyle{empty}
+\vspace*{\fill}
+\begin{center}
+\Large An Orientation for Future Hackers\\未来のハッカーのためのオリエンテーション
+\end{center}
+\bigskip
+\begin{tabular}{@{}ll}
+発行日   & 20XX年X月X日版（プレプリント） \\[.5\baselineskip]
+著者     & 森\ 祐佳 \\
+発行者   & 森\ 祐佳 \\
+発行所   & 一般社団法人生活情報基盤研究機構（Menhera\textregistered） \\
+         & \texttt{https://www.menhera.org/} \\[.5\baselineskip]
+\end{tabular}
+\bigskip
+ 
+\noindent 本書はクリエイティブ・コモンズ表示4.0国際ライセンス（\texttt{https://creativecommons.org/licenses/by/4.0/}）のもとでライセンスされています。\par
+\noindent \copyright\ 2026 Human-life Information Platforms Institute.
+%\vspace*{\fill}
+ 
+\end{document}
