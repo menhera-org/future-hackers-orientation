@@ -97,6 +97,25 @@
     chapter = {label_format = {付録\thechapter}}
   },
 }
+
+\usepackage{xcolor}
+\definecolor{accentcolor}{HTML}{5EAF30}
+
+\ModifyHeading{chapter}{format={\color{accentcolor}#1#2}}
+\ModifyHeading{section}{format={\color{accentcolor}#1#2}}
+
+\usepackage[
+  backend=biber,
+  style=numeric,     % [1][2][3]-style — reads cleanly inline in running
+                      % text; switch to style=alphabetic for [Tan21]-style
+                      % if you'd rather the marker hint at the source
+  sorting=none,       % order of first citation, not alphabetical —
+                      % matches how a lecture actually references things
+]{biblatex}
+\addbibresource{refs.bib}   % keep this as its own tracked file in the
+                            % Overleaf/GitHub repo, not inlined in main.tex
+\setlength{\biblabelsep}{1em}
+
 % Note: 「」『』 kagikakko dialogue/quotation marks need no package or
 % setup at all — they're ordinary characters, and jlreq positions them
 % (spacing, line-break behavior, hanging at line-end) per the JLReq
@@ -114,7 +133,7 @@
 \begin{document}
 
 \frontmatter
-\maketitle
+{\color{accentcolor}\maketitle}
 
 \chapter*{はじめに}
 
